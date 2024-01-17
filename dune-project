@@ -1,4 +1,4 @@
-(lang dune 3.11)
+(lang dune 3.12)
 
 (name auto-format)
 
@@ -18,12 +18,9 @@
 (package
  (name auto-format)
  (synopsis "Utils to build auto format commands for custom languages")
- (description "Utils to build auto format commands for custom languages")
  (depends
   (ocaml
    (>= 5.1))
-  (dune
-   (>= 3.11))
   (base
    (and
     (>= v0.16)
