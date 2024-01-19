@@ -1,3 +1,9 @@
+## Unreleased
+
+### Changed
+
+- Upgrade to `Eio_writer.0.0.3` API (breaking change).
+
 ## 0.0.2 (2024-01-17)
 
 ### Changed

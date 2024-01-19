@@ -28,7 +28,7 @@
   (eio
    (>= 0.13))
   (eio-writer
-   (>= 0.0.1))
+   (>= 0.0.3))
   (eio_main
    (>= 0.13))
   (expect_test_helpers_core
