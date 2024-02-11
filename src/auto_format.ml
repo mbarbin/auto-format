@@ -111,8 +111,7 @@ struct
         (Printf.sprintf
            "check that all %s files of the current directory can be pretty-printed"
            (Config.extensions |> String.concat ~sep:", "))
-      (let open Command.Let_syntax in
-       let%map_open () = return () in
+      (let%map_open.Command () = return () in
        fun () ->
          Eio_main.run
          @@ fun env ->
@@ -139,8 +138,7 @@ struct
         (Printf.sprintf
            "generate dune stanza for all %s files present in the cwd to be pretty-printed"
            (Config.extensions |> String.concat ~sep:", "))
-      (let open Command.Let_syntax in
-       let%map_open exclude =
+      (let%map_open.Command exclude =
          flag
            "--exclude"
            (optional_with_default [] (Arg_type.comma_separated string))
@@ -206,7 +204,7 @@ struct
   ;;
 
   let file_cmd =
-    Command.basic
+    Command.basic_or_error
       ~summary:(Printf.sprintf "autoformat %s files" Config.language_id)
       ~readme:(fun () ->
         let buffer = Buffer.create 256 in
@@ -238,8 +236,7 @@ last newline, a flag has been added to add an extra blank line, shall you run
 into this issue.
       |};
         Buffer.contents buffer)
-      (let open Command.Let_syntax in
-       let%map_open path = anon ("FILE" %: Fpath_extended.arg_type)
+      (let%map_open.Command path = anon ("FILE" %: Fpath_extended.arg_type)
        and read_contents_from_stdin =
          flag
            "--read-contents-from-stdin"
@@ -258,28 +255,19 @@ into this issue.
          @@ fun env ->
          let cwd = Eio.Stdenv.fs env in
          let path = Eio.Path.(cwd / Fpath.to_string path) in
-         let open Or_error.Let_syntax in
-         match
-           let%bind { Pretty_print_result.pretty_printed_contents; result } =
-             pretty_print ~env ~path ~read_contents_from_stdin
-           in
-           Eio_writer.with_flow (Eio.Stdenv.stdout env) (fun stdout ->
-             Eio_writer.write_string stdout pretty_printed_contents;
-             if add_extra_blank_line then Eio_writer.write_newline stdout);
-           result
-         with
-         | Ok () -> ()
-         | Error e ->
-           Eio_writer.with_flow (Eio.Stdenv.stderr env) (fun stderr ->
-             Eio_writer.write_line stderr (Error.to_string_hum e));
-           Stdlib.exit 1)
+         let%bind { Pretty_print_result.pretty_printed_contents; result } =
+           pretty_print ~env ~path ~read_contents_from_stdin
+         in
+         Eio_writer.with_flow (Eio.Stdenv.stdout env) (fun stdout ->
+           Eio_writer.write_string stdout pretty_printed_contents;
+           if add_extra_blank_line then Eio_writer.write_newline stdout);
+         result)
   ;;
 
   let dump_cmd =
-    Command.basic
+    Command.basic_or_error
       ~summary:"dump a parsed tree on stdout"
-      (let open Command.Let_syntax in
-       let%map_open path = anon ("FILE" %: Fpath_extended.arg_type)
+      (let%map_open.Command path = anon ("FILE" %: Fpath_extended.arg_type)
        and with_positions = flag "--loc" no_arg ~doc:" dump loc details"
        and debug_comments =
          flag "--debug-comments" no_arg ~doc:" dump comments state messages"
@@ -289,24 +277,16 @@ into this issue.
          @@ fun env ->
          let cwd = Eio.Stdenv.fs env in
          let path = Eio.Path.(cwd / Fpath.to_string path) in
-         match
-           let open Or_error.Let_syntax in
-           let%bind (program : T.t) =
-             Ref.set_temporarily
-               Parsing_utils.Comments_state.debug
-               debug_comments
-               ~f:(fun () -> Parsing_utils.parse (module T_syntax) ~path)
-           in
-           Ref.set_temporarily Loc.include_sexp_of_positions with_positions ~f:(fun () ->
-             Eio_writer.with_flow (Eio.Stdenv.stdout env) (fun stdout ->
-               Eio_writer.write_sexp stdout [%sexp (program : T.t)]));
-           return ()
-         with
-         | Ok () -> ()
-         | Error e ->
-           Eio_writer.with_flow (Eio.Stdenv.stderr env) (fun stderr ->
-             Eio_writer.write_line stderr (Error.to_string_hum e));
-           Stdlib.exit 1)
+         let%bind (program : T.t) =
+           Ref.set_temporarily
+             Parsing_utils.Comments_state.debug
+             debug_comments
+             ~f:(fun () -> Parsing_utils.parse (module T_syntax) ~path)
+         in
+         Ref.set_temporarily Loc.include_sexp_of_positions with_positions ~f:(fun () ->
+           Eio_writer.with_flow (Eio.Stdenv.stdout env) (fun stdout ->
+             Eio_writer.write_sexp stdout [%sexp (program : T.t)]));
+         return ())
   ;;
 
   let fmt_cmd =
