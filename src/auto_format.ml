@@ -158,9 +158,8 @@ struct
          in
          let output_ext = ".pp.output" in
          let generate_rules ~file =
-           let open Sexp in
-           let list s = List s
-           and atom s = Atom s in
+           let list s = Sexp.List s
+           and atom s = Sexp.Atom s in
            let atoms s = List.map s ~f:atom in
            let pp =
              list
