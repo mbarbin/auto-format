@@ -235,7 +235,7 @@ last newline, a flag has been added to add an extra blank line, shall you run
 into this issue.
       |};
         Buffer.contents buffer)
-      (let%map_open.Command path = anon ("FILE" %: Fpath_extended.arg_type)
+      (let%map_open.Command path = anon ("FILE" %: Arg_type.create Fpath.v)
        and read_contents_from_stdin =
          flag
            "--read-contents-from-stdin"
@@ -266,7 +266,7 @@ into this issue.
   let dump_cmd =
     Command.basic_or_error
       ~summary:"dump a parsed tree on stdout"
-      (let%map_open.Command path = anon ("FILE" %: Fpath_extended.arg_type)
+      (let%map_open.Command path = anon ("FILE" %: Arg_type.create Fpath.v)
        and with_positions = flag "--loc" no_arg ~doc:" dump loc details"
        and debug_comments =
          flag "--debug-comments" no_arg ~doc:" dump comments state messages"
