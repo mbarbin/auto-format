@@ -1,3 +1,10 @@
+## 0.0.5 (2024-02-27)
+
+### Changed
+
+- List ppxs instead of `ppx_jane`.
+- Upgrade to `fpath-extended.0.0.7` (breaking change).
+
 ## 0.0.4 (2024-02-14)
 
 ### Changed
