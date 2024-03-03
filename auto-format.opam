@@ -14,7 +14,7 @@ depends: [
   "eio" {>= "0.15"}
   "eio-writer" {>= "0.0.3"}
   "eio_main" {>= "0.15"}
-  "expect_test_helpers_core" {with-test & >= "v0.16" & < "v0.17"}
+  "expect-test-helpers" {with-test & >= "v0.16" & < "v0.17"}
   "fpath" {>= "0.7.3"}
   "fpath-extended" {>= "0.0.7"}
   "loc" {>= "0.0.2"}
