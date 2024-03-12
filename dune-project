@@ -26,11 +26,11 @@
     (>= v0.16)
     (< v0.17)))
   (eio
-   (>= 0.15))
+   (>= 1.0))
   (eio-writer
    (>= 0.0.3))
   (eio_main
-   (>= 0.15))
+   (>= 1.0))
   (expect-test-helpers
    (and
     :with-test
