@@ -16,7 +16,7 @@ depends: [
   "eio_main" {>= "1.0"}
   "expect-test-helpers" {with-test & >= "v0.16" & < "v0.17"}
   "fpath" {>= "0.7.3"}
-  "fpath-base" {>= "0.0.8"}
+  "fpath-base" {>= "0.0.9"}
   "loc" {>= "0.0.2"}
   "parsing-utils" {>= "0.0.2"}
   "pp" {>= "1.2.0"}

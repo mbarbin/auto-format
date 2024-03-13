@@ -39,7 +39,7 @@
   (fpath
    (>= 0.7.3))
   (fpath-base
-   (>= 0.0.8))
+   (>= 0.0.9))
   (loc
    (>= 0.0.2))
   (parsing-utils
