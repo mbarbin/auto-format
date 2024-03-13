@@ -1,6 +1,4 @@
-## 0.0.6 (unreleased)
-
-### Added
+## 0.0.6 (2024-03-13)
 
 ### Changed
 
@@ -11,12 +9,6 @@
 - Run `ppx_js_style` as a linter & make it a `dev` dependency.
 - Upgrade GitHub workflows `actions/checkout` to v4.
 - In CI, specify build target `@all`, and add `@lint`.
-
-### Deprecated
-
-### Fixed
-
-### Removed
 
 ## 0.0.5 (2024-02-27)
 
