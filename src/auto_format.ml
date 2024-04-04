@@ -168,11 +168,9 @@ struct
                    [ atom "with-stdout-to"
                    ; atom (file ^ output_ext)
                    ; list
-                       [ atom "bash"
-                       ; atom
-                           (String.concat ~sep:" " call
-                            ^ Printf.sprintf " %%{dep:%s}" file)
-                       ]
+                       ([ [ "run" ]; call; [ Printf.sprintf "%%{dep:%s}" file ] ]
+                        |> List.concat
+                        |> List.map ~f:atom)
                    ]
                ]
            in
