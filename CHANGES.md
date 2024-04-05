@@ -1,16 +1,8 @@
-## 0.0.7 (unreleased)
-
-### Added
+## 0.0.7 (2024-04-05)
 
 ### Changed
 
 - Use `run` instead of `bash` in generated dune rules actions.
-
-### Deprecated
-
-### Fixed
-
-### Removed
 
 ## 0.0.6 (2024-03-13)
 
