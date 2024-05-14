@@ -20,7 +20,7 @@
  (synopsis "Utils to build auto format commands for custom languages")
  (depends
   (ocaml
-   (>= 5.1))
+   (>= 5.2))
   (base
    (and
     (>= v0.17)
