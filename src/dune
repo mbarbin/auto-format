@@ -10,9 +10,12 @@
   -open
   Base
   -open
-  Fpath_base)
+  Fpath_base
+  -open
+  Commandlang)
  (libraries
   base
+  commandlang
   eio
   eio-writer
   eio_main

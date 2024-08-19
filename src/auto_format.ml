@@ -106,102 +106,103 @@ struct
   ;;
 
   let test_cmd =
-    Command.basic
+    Command.make
       ~summary:
         (Printf.sprintf
            "check that all %s files of the current directory can be pretty-printed"
            (Config.extensions |> String.concat ~sep:", "))
-      (let%map_open.Command () = return () in
-       fun () ->
-         Eio_main.run
-         @@ fun env ->
-         let cwd = Eio.Stdenv.fs env in
-         let files = find_files_in_cwd_by_extensions ~cwd ~extensions:Config.extensions in
-         Eio_writer.with_flow (Eio.Stdenv.stdout env)
-         @@ fun stdout ->
-         List.iter files ~f:(fun filename ->
-           let path = Eio.Path.(cwd / filename) in
-           Eio_writer.writef stdout "================================: %s\n" filename;
-           match pretty_print ~env ~path ~read_contents_from_stdin:false with
-           | Error e -> Eio_writer.write_line stdout (Error.to_string_hum e)
-           | Ok { pretty_printed_contents; result } ->
-             Eio_writer.write_string stdout pretty_printed_contents;
-             (match result with
-              | Ok () -> ()
-              | Error e ->
-                Eio_writer.writef stdout "======: errors\n%s\n" (Error.to_string_hum e))))
+      (let%map_open.Command () = Arg.return () in
+       Eio_main.run
+       @@ fun env ->
+       let cwd = Eio.Stdenv.fs env in
+       let files = find_files_in_cwd_by_extensions ~cwd ~extensions:Config.extensions in
+       Eio_writer.with_flow (Eio.Stdenv.stdout env)
+       @@ fun stdout ->
+       List.iter files ~f:(fun filename ->
+         let path = Eio.Path.(cwd / filename) in
+         Eio_writer.writef stdout "================================: %s\n" filename;
+         match pretty_print ~env ~path ~read_contents_from_stdin:false with
+         | Error e -> Eio_writer.write_line stdout (Error.to_string_hum e)
+         | Ok { pretty_printed_contents; result } ->
+           Eio_writer.write_string stdout pretty_printed_contents;
+           (match result with
+            | Ok () -> ()
+            | Error e ->
+              Eio_writer.writef stdout "======: errors\n%s\n" (Error.to_string_hum e))))
   ;;
 
   let gen_dune_cmd =
-    Command.basic
+    Command.make
       ~summary:
         (Printf.sprintf
            "generate dune stanza for all %s files present in the cwd to be pretty-printed"
            (Config.extensions |> String.concat ~sep:", "))
       (let%map_open.Command exclude =
-         flag
-           "--exclude"
-           (optional_with_default [] (Arg_type.comma_separated string))
-           ~doc:"FILE[,..]* file to exclude"
+         Arg.named_with_default
+           [ "exclude" ]
+           (Param.comma_separated Param.string)
+           ~default:[]
+           ~docv:"FILE"
+           ~doc:"files to exclude"
        and call =
-         flag "--" escape ~doc:" how to access the [fmt file] command for these files"
-         >>| Option.value ~default:[]
+         Arg.pos_all
+           Param.string
+           ~doc:"how to access the [fmt file] command for these files"
        in
-       fun () ->
-         Eio_main.run
-         @@ fun env ->
-         let files =
-           find_files_in_cwd_by_extensions
-             ~cwd:(Eio.Stdenv.cwd env)
-             ~extensions:Config.extensions
-           |> List.filter ~f:(fun file -> not (List.mem exclude file ~equal:String.equal))
+       Eio_main.run
+       @@ fun env ->
+       let files =
+         find_files_in_cwd_by_extensions
+           ~cwd:(Eio.Stdenv.cwd env)
+           ~extensions:Config.extensions
+         |> List.filter ~f:(fun file -> not (List.mem exclude file ~equal:String.equal))
+       in
+       let output_ext = ".pp.output" in
+       let generate_rules ~file =
+         let list s = Sexp.List s
+         and atom s = Sexp.Atom s in
+         let atoms s = List.map s ~f:atom in
+         let pp =
+           list
+             [ atom "rule"
+             ; list
+                 [ atom "with-stdout-to"
+                 ; atom (file ^ output_ext)
+                 ; list
+                     ([ [ "run" ]; call; [ Printf.sprintf "%%{dep:%s}" file ] ]
+                      |> List.concat
+                      |> List.map ~f:atom)
+                 ]
+             ]
          in
-         let output_ext = ".pp.output" in
-         let generate_rules ~file =
-           let list s = Sexp.List s
-           and atom s = Sexp.Atom s in
-           let atoms s = List.map s ~f:atom in
-           let pp =
-             list
-               [ atom "rule"
-               ; list
-                   [ atom "with-stdout-to"
-                   ; atom (file ^ output_ext)
-                   ; list
-                       ([ [ "run" ]; call; [ Printf.sprintf "%%{dep:%s}" file ] ]
-                        |> List.concat
-                        |> List.map ~f:atom)
-                   ]
-               ]
-           in
-           let fmt =
-             list
-               [ atom "rule"
-               ; list (atoms [ "alias"; "fmt" ])
-               ; list
-                   [ atom "action"
-                   ; list [ atom "diff"; atom file; atom (file ^ output_ext) ]
-                   ]
-               ]
-           in
-           [ pp; fmt ]
+         let fmt =
+           list
+             [ atom "rule"
+             ; list (atoms [ "alias"; "fmt" ])
+             ; list
+                 [ atom "action"
+                 ; list [ atom "diff"; atom file; atom (file ^ output_ext) ]
+                 ]
+             ]
          in
-         Eio_writer.with_flow (Eio.Stdenv.stdout env)
-         @@ fun stdout ->
-         Eio_writer.writef
-           stdout
-           "; dune file generated by '%s' -- do not edit.\n"
-           (List.map call ~f:(function
-              | "file" -> "gen-dune"
-              | e -> e)
-            |> String.concat ~sep:" ");
-         List.iter files ~f:(fun file ->
-           List.iter (generate_rules ~file) ~f:(fun sexp ->
-             Eio_writer.write_sexp stdout sexp)))
+         [ pp; fmt ]
+       in
+       Eio_writer.with_flow (Eio.Stdenv.stdout env)
+       @@ fun stdout ->
+       Eio_writer.writef
+         stdout
+         "; dune file generated by '%s' -- do not edit.\n"
+         (List.map call ~f:(function
+            | "file" -> "gen-dune"
+            | e -> e)
+          |> String.concat ~sep:" ");
+       List.iter files ~f:(fun file ->
+         List.iter (generate_rules ~file) ~f:(fun sexp ->
+           Eio_writer.write_sexp stdout sexp)))
   ;;
 
   let file_cmd =
-    Command.basic_or_error
+    Command.make
       ~summary:(Printf.sprintf "autoformat %s files" Config.language_id)
       ~readme:(fun () ->
         let buffer = Buffer.create 256 in
@@ -233,21 +234,16 @@ last newline, a flag has been added to add an extra blank line, shall you run
 into this issue.
       |};
         Buffer.contents buffer)
-      (let%map_open.Command path = anon ("FILE" %: Arg_type.create Fpath.v)
+      (let%map_open.Command path =
+         Arg.pos ~pos:0 Param.file ~docv:"FILE" ~doc:"file to format" >>| Fpath.v
        and read_contents_from_stdin =
-         flag
-           "--read-contents-from-stdin"
-           ~aliases:[ "read-contents-from-stdin" ]
-           no_arg
-           ~doc:" read contents from stdin rather than from the file"
+         Arg.flag
+           [ "read-contents-from-stdin" ]
+           ~doc:"read contents from stdin rather than from the file"
        and add_extra_blank_line =
-         flag
-           "--add-extra-blank-line"
-           ~aliases:[ "add-extra-blank-line" ]
-           no_arg
-           ~doc:" add an extra blank line at the end"
+         Arg.flag [ "add-extra-blank-line" ] ~doc:"add an extra blank line at the end"
        in
-       fun () ->
+       match
          Eio_main.run
          @@ fun env ->
          let cwd = Eio.Stdenv.fs env in
@@ -258,18 +254,24 @@ into this issue.
          Eio_writer.with_flow (Eio.Stdenv.stdout env) (fun stdout ->
            Eio_writer.write_string stdout pretty_printed_contents;
            if add_extra_blank_line then Eio_writer.write_newline stdout);
-         result)
+         result
+       with
+       | Ok () -> ()
+       | Error err ->
+         Stdlib.prerr_endline (Error.to_string_hum err);
+         Stdlib.exit 1)
   ;;
 
   let dump_cmd =
-    Command.basic_or_error
+    Command.make
       ~summary:"dump a parsed tree on stdout"
-      (let%map_open.Command path = anon ("FILE" %: Arg_type.create Fpath.v)
-       and with_positions = flag "--loc" no_arg ~doc:" dump loc details"
+      (let%map_open.Command path =
+         Arg.pos ~pos:0 Param.file ~docv:"FILE" ~doc:"file to dump" >>| Fpath.v
+       and with_positions = Arg.flag [ "loc" ] ~doc:"dump loc details"
        and debug_comments =
-         flag "--debug-comments" no_arg ~doc:" dump comments state messages"
+         Arg.flag [ "debug-comments" ] ~doc:"dump comments state messages"
        in
-       fun () ->
+       match
          Eio_main.run
          @@ fun env ->
          let cwd = Eio.Stdenv.fs env in
@@ -283,7 +285,12 @@ into this issue.
          Ref.set_temporarily Loc.include_sexp_of_positions with_positions ~f:(fun () ->
            Eio_writer.with_flow (Eio.Stdenv.stdout env) (fun stdout ->
              Eio_writer.write_sexp stdout [%sexp (program : T.t)]));
-         return ())
+         return ()
+       with
+       | Ok () -> ()
+       | Error err ->
+         Stdlib.prerr_endline (Error.to_string_hum err);
+         Stdlib.exit 1)
   ;;
 
   let fmt_cmd =

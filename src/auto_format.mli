@@ -34,7 +34,7 @@ val fmt_cmd
   -> (module T with type t = 'a)
   -> (module Parsing_utils.S with type t = 'a)
   -> (module T_pp with type t = 'a)
-  -> Command.t
+  -> unit Command.t
 
 (** Find all the files in the current directory that have one of the supplied
     extensions. *)
