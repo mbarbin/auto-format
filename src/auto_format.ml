@@ -50,12 +50,32 @@ struct
       }
   end
 
+  module Parsing_result = struct
+    type 'a t = 'a Parsing_utils.Parsing_result.t
+
+    let with_dot m = if String.is_suffix m ~suffix:"." then m else m ^ "."
+
+    let or_error (t : _ t) =
+      match t with
+      | Ok t -> Ok t
+      | Error { loc; exn } ->
+        let extra =
+          match exn with
+          | Failure m -> "\nError: " ^ with_dot m
+          | Eio.Io _ as exn -> "\nError: " ^ with_dot (Exn.to_string exn)
+          | _ -> " syntax error."
+        in
+        Or_error.errorf "%s%s" (Loc.to_string loc) extra
+    ;;
+  end
+
   let rec find_fix_point ~path ~num_steps ~contents =
     let%bind (program : T.t) =
       Parsing_utils.parse_lexbuf
         (module T_syntax)
         ~path
         ~lexbuf:(Lexing.from_string contents)
+      |> Parsing_result.or_error
     in
     let pretty_printed_contents = Pp_extended.to_string (T_pp.pp program) in
     let ts_are_equal =
@@ -64,6 +84,7 @@ struct
           (module T_syntax)
           ~path
           ~lexbuf:(Lexing.from_string pretty_printed_contents)
+        |> Parsing_result.or_error
       in
       Ref.set_temporarily Loc.equal_ignores_positions true ~f:(fun () ->
         T.equal program program_2)
@@ -71,7 +92,7 @@ struct
     let ts_are_equal =
       match ts_are_equal with
       | Ok false -> if force allow_changes then Ok true else ts_are_equal
-      | t -> t
+      | (Ok true | Error _) as t -> t
     in
     match ts_are_equal with
     | Ok false ->
@@ -271,26 +292,19 @@ into this issue.
        and debug_comments =
          Arg.flag [ "debug-comments" ] ~doc:"dump comments state messages"
        in
-       match
-         Eio_main.run
-         @@ fun env ->
-         let cwd = Eio.Stdenv.fs env in
-         let path = Eio.Path.(cwd / Fpath.to_string path) in
-         let%bind (program : T.t) =
-           Ref.set_temporarily
-             Parsing_utils.Comments_state.debug
-             debug_comments
-             ~f:(fun () -> Parsing_utils.parse (module T_syntax) ~path)
-         in
-         Ref.set_temporarily Loc.include_sexp_of_positions with_positions ~f:(fun () ->
-           Eio_writer.with_flow (Eio.Stdenv.stdout env) (fun stdout ->
-             Eio_writer.write_sexp stdout [%sexp (program : T.t)]));
-         return ()
-       with
-       | Ok () -> ()
-       | Error err ->
-         Stdlib.prerr_endline (Error.to_string_hum err);
-         Stdlib.exit 1)
+       Eio_main.run
+       @@ fun env ->
+       let cwd = Eio.Stdenv.fs env in
+       let path = Eio.Path.(cwd / Fpath.to_string path) in
+       let (program : T.t) =
+         Ref.set_temporarily
+           Parsing_utils.Comments_state.debug
+           debug_comments
+           ~f:(fun () -> Parsing_utils.parse_exn (module T_syntax) ~path)
+       in
+       Ref.set_temporarily Loc.include_sexp_of_positions with_positions ~f:(fun () ->
+         Eio_writer.with_flow (Eio.Stdenv.stdout env) (fun stdout ->
+           Eio_writer.write_sexp stdout [%sexp (program : T.t)])))
   ;;
 
   let fmt_cmd =
