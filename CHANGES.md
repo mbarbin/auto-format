@@ -1,3 +1,9 @@
+## 0.0.10 (2024-08-22)
+
+### Changed
+
+- Upgrade `parsing-utils` to `0.0.7` (breaking change).
+
 ## 0.0.9 (2024-08-19)
 
 ### Changed
