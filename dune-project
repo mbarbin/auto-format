@@ -26,7 +26,7 @@
     (>= v0.17)
     (< v0.18)))
   (commandlang
-   (>= 0.0.1~preview-0.1))
+   (>= 0.0.1))
   (eio
    (>= 1.0))
   (eio-writer
