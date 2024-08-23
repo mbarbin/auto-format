@@ -1,3 +1,11 @@
+## 0.0.11 (2024-08-23)
+
+### Changed
+
+- Split test package and use `Expect_test_helpers_base`.
+- Upgrade to `parsing-utils.0.0.8`.
+- Upgrade to `err0.0.0.2` & `loc0.0.1.0`.
+
 ## 0.0.10 (2024-08-22)
 
 ### Changed

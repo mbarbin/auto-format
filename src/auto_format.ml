@@ -86,7 +86,7 @@ struct
           ~lexbuf:(Lexing.from_string pretty_printed_contents)
         |> Parsing_result.or_error
       in
-      Ref.set_temporarily Loc.equal_ignores_positions true ~f:(fun () ->
+      Ref.set_temporarily Loc.equal_ignores_locs true ~f:(fun () ->
         T.equal program program_2)
     in
     let ts_are_equal =
@@ -302,7 +302,7 @@ into this issue.
            debug_comments
            ~f:(fun () -> Parsing_utils.parse_exn (module T_syntax) ~path)
        in
-       Ref.set_temporarily Loc.include_sexp_of_positions with_positions ~f:(fun () ->
+       Ref.set_temporarily Loc.include_sexp_of_locs with_positions ~f:(fun () ->
          Eio_writer.with_flow (Eio.Stdenv.stdout env) (fun stdout ->
            Eio_writer.write_sexp stdout [%sexp (program : T.t)])))
   ;;
