@@ -10,6 +10,8 @@
   -open
   Base
   -open
+  Loc0
+  -open
   Fpath_base
   -open
   Commandlang)
@@ -21,6 +23,7 @@
   eio_main
   fpath
   fpath-base
+  loc0
   parsing-utils
   pp
   pp-extended)
