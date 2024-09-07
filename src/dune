@@ -10,21 +10,23 @@
   -open
   Base
   -open
-  Loc0
-  -open
   Fpath_base
   -open
-  Commandlang)
+  Cmdlang)
  (libraries
   base
-  commandlang
+  cmdlang
+  comments-parser
   eio
   eio-writer
   eio_main
+  err
+  err-cli
   fpath
   fpath-base
-  loc0
+  loc
   parsing-utils
+  parsing-utils-eio
   pp
   pp-extended)
  (lint
