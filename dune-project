@@ -25,22 +25,30 @@
    (and
     (>= v0.17)
     (< v0.18)))
-  (commandlang
-   (>= 0.0.2))
+  (cmdlang
+   (>= 0.0.4))
+  (comments-parser
+   (>= 0.2.0))
   (eio
    (>= 1.0))
   (eio-writer
    (>= 0.0.3))
   (eio_main
    (>= 1.0))
+  (err
+   (>= 0.0.4))
+  (err-cli
+   (>= 0.0.4))
   (fpath
    (>= 0.7.3))
   (fpath-base
-   (>= 0.0.9))
-  (loc0
-   (>= 0.1.0))
+   (>= 0.2.0))
+  (loc
+   (>= 0.2.0))
   (parsing-utils
-   (>= 0.0.8))
+   (>= 0.2.0))
+  (parsing-utils-eio
+   (>= 0.2.0))
   (pp
    (>= 1.2.0))
   (pp-extended
@@ -59,11 +67,6 @@
     (< v0.18)))
   (ppx_here
    (and
-    (>= v0.17)
-    (< v0.18)))
-  (ppx_js_style
-   (and
-    :dev
     (>= v0.17)
     (< v0.18)))
   (ppx_let
@@ -87,20 +90,30 @@
  (depends
   (ocaml
    (>= 5.2))
+  (ocamlformat
+   (and
+    :with-dev-setup
+    (= 0.26.2)))
   (auto-format
    (= :version))
   (base
    (and
     (>= v0.17)
     (< v0.18)))
-  (commandlang
-   (>= 0.0.2))
+  (cmdlang
+   (>= 0.0.4))
+  (comments-parser
+   (>= 0.2.0))
   (eio
    (>= 1.0))
   (eio-writer
    (>= 0.0.3))
   (eio_main
    (>= 1.0))
+  (err
+   (>= 0.0.4))
+  (err-cli
+   (>= 0.0.4))
   (expect_test_helpers_core
    (and
     (>= v0.17)
@@ -108,11 +121,13 @@
   (fpath
    (>= 0.7.3))
   (fpath-base
-   (>= 0.0.9))
-  (loc0
-   (>= 0.1.0))
+   (>= 0.2.0))
+  (loc
+   (>= 0.2.0))
   (parsing-utils
-   (>= 0.0.8))
+   (>= 0.2.0))
+  (parsing-utils-eio
+   (>= 0.2.0))
   (pp
    (>= 1.2.0))
   (pp-extended
@@ -139,7 +154,7 @@
     (< v0.18)))
   (ppx_js_style
    (and
-    :dev
+    :with-dev-setup
     (>= v0.17)
     (< v0.18)))
   (ppx_let

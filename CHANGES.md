@@ -1,3 +1,10 @@
+## 0.0.12 (2024-09-07)
+
+### Changed
+
+- Upgrade to `cmdlang.0.0.4`.
+- Upgrade to `fpath-base.0.2.0`.
+
 ## 0.0.11 (2024-08-23)
 
 ### Changed
@@ -16,7 +23,7 @@
 
 ### Changed
 
-- Switch to using `commandlang` for commands.
+- Switch to using `cmdlang` for commands.
 
 ## 0.0.8 (2024-07-26)
 
