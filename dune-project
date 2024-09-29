@@ -28,7 +28,7 @@
   (cmdlang
    (>= 0.0.5))
   (comments-parser
-   (>= 0.2.0))
+   (>= 0.2.1))
   (eio
    (>= 1.0))
   (eio-writer
@@ -46,9 +46,9 @@
   (loc
    (>= 0.2.0))
   (parsing-utils
-   (>= 0.2.0))
+   (>= 0.2.1))
   (parsing-utils-eio
-   (>= 0.2.0))
+   (>= 0.2.1))
   (pp
    (>= 1.2.0))
   (pp-extended
@@ -103,7 +103,7 @@
   (cmdlang
    (>= 0.0.5))
   (comments-parser
-   (>= 0.2.0))
+   (>= 0.2.1))
   (eio
    (>= 1.0))
   (eio-writer
@@ -125,9 +125,9 @@
   (loc
    (>= 0.2.0))
   (parsing-utils
-   (>= 0.2.0))
+   (>= 0.2.1))
   (parsing-utils-eio
-   (>= 0.2.0))
+   (>= 0.2.1))
   (pp
    (>= 1.2.0))
   (pp-extended
