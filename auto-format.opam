@@ -19,7 +19,7 @@ depends: [
   "err" {>= "0.0.5"}
   "err-cli" {>= "0.0.5"}
   "fpath" {>= "0.7.3"}
-  "fpath-base" {>= "0.2.0"}
+  "fpath-base" {>= "0.2.2"}
   "loc" {>= "0.2.0"}
   "parsing-utils" {>= "0.2.1"}
   "parsing-utils-eio" {>= "0.2.1"}
