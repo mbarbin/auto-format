@@ -20,8 +20,8 @@
   eio
   eio-writer
   eio_main
-  err
-  err-cli
+  pp-log.err
+  pp-log.cli
   fpath
   fpath-base
   loc
