@@ -20,15 +20,15 @@
   eio
   eio-writer
   eio_main
-  pp-log.err
-  pp-log.cli
   fpath
   fpath-base
   loc
   parsing-utils
   parsing-utils-eio
   pp
-  pp-extended)
+  pp-extended
+  pp-log.cli
+  pp-log.err)
  (lint
   (pps ppx_js_style -check-doc-comments))
  (preprocess
