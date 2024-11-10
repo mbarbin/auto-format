@@ -28,17 +28,13 @@
   (cmdlang
    (>= 0.0.5))
   (comments-parser
-   (>= 0.2.1))
+   (>= 0.2.2))
   (eio
    (>= 1.0))
   (eio-writer
    (>= 0.0.3))
   (eio_main
    (>= 1.0))
-  (err
-   (>= 0.0.5))
-  (err-cli
-   (>= 0.0.5))
   (fpath
    (>= 0.7.3))
   (fpath-base
@@ -46,13 +42,15 @@
   (loc
    (>= 0.2.0))
   (parsing-utils
-   (>= 0.2.1))
+   (>= 0.2.2))
   (parsing-utils-eio
-   (>= 0.2.1))
+   (>= 0.2.2))
   (pp
    (>= 1.2.0))
   (pp-extended
    (>= 0.0.2))
+  (pp-log
+   (>= 0.0.7))
   (ppx_compare
    (and
     (>= v0.17)
@@ -103,17 +101,13 @@
   (cmdlang
    (>= 0.0.5))
   (comments-parser
-   (>= 0.2.1))
+   (>= 0.2.2))
   (eio
    (>= 1.0))
   (eio-writer
    (>= 0.0.3))
   (eio_main
    (>= 1.0))
-  (err
-   (>= 0.0.5))
-  (err-cli
-   (>= 0.0.5))
   (expect_test_helpers_core
    (and
     (>= v0.17)
@@ -125,13 +119,15 @@
   (loc
    (>= 0.2.0))
   (parsing-utils
-   (>= 0.2.1))
+   (>= 0.2.2))
   (parsing-utils-eio
-   (>= 0.2.1))
+   (>= 0.2.2))
   (pp
    (>= 1.2.0))
   (pp-extended
    (>= 0.0.2))
+  (pp-log
+   (>= 0.0.7))
   (ppx_compare
    (and
     (>= v0.17)
