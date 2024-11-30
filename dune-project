@@ -15,6 +15,8 @@
 
 (documentation "https://mbarbin.github.io/auto-format/")
 
+(implicit_transitive_deps false)
+
 (package
  (name auto-format)
  (synopsis "Utils to build auto format commands for custom languages")
