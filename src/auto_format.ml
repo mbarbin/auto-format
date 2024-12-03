@@ -307,11 +307,11 @@ into this issue.
 end
 
 let fmt_cmd
-  (type t)
-  (module Config : Config.S)
-  (module T : T with type t = t)
-  (module Syntax : Parsing_utils.S with type t = t)
-  (module Pp : T_pp with type t = t)
+      (type t)
+      (module Config : Config.S)
+      (module T : T with type t = t)
+      (module Syntax : Parsing_utils.S with type t = t)
+      (module Pp : T_pp with type t = t)
   =
   let module M = Make (Config) (T) (Syntax) (Pp) in
   M.fmt_cmd

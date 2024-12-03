@@ -91,7 +91,7 @@
   (ocamlformat
    (and
     :with-dev-setup
-    (= 0.26.2)))
+    (= 0.27.0)))
   (auto-format
    (= :version))
   (base
