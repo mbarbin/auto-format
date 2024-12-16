@@ -46,7 +46,7 @@
   (parsing-utils-eio
    (>= 0.2.2))
   (pp
-   (>= 1.2.0))
+   (>= 2.0.0))
   (pp-extended
    (>= 0.0.2))
   (pp-log
@@ -123,7 +123,7 @@
   (parsing-utils-eio
    (>= 0.2.2))
   (pp
-   (>= 1.2.0))
+   (>= 2.0.0))
   (pp-extended
    (>= 0.0.2))
   (pp-log
