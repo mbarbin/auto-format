@@ -36,13 +36,6 @@ val fmt_cmd
   -> (module T_pp with type t = 'a)
   -> unit Command.t
 
-(** Find all the files in the current directory that have one of the supplied
-    extensions. *)
-val find_files_in_cwd_by_extensions
-  :  cwd:_ Eio.Path.t
-  -> extensions:string list
-  -> string list
-
 (** The pretty-printer may sometimes be used to perform some automatic
     refactoring on the files it formats. This is only possible when the
     environment variable AUTO_FORMAT_ALLOW_CHANGES=true. *)

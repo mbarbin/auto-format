@@ -1,10 +1,11 @@
 let find_files_in_cwd_by_extensions ~cwd ~extensions =
-  let ls_dir = Eio.Path.read_dir cwd in
-  List.filter ls_dir ~f:(fun file ->
-    let path = Eio.Path.(cwd / file) in
-    let fpath = path |> snd |> Fpath.v in
-    Eio.Path.is_file path
-    && List.exists extensions ~f:(fun extension -> Fpath.has_ext extension fpath))
+  Stdlib.Sys.readdir cwd
+  |> Array.map ~f:Fpath.v
+  |> Array.to_list
+  |> List.filter ~f:(fun file ->
+    Stdlib.Sys.is_regular_file (Fpath.to_string file)
+    && List.exists extensions ~f:(fun extension -> Fpath.has_ext extension file))
+  |> List.sort ~compare:Fpath.compare
 ;;
 
 let allow_changes =
@@ -60,7 +61,7 @@ struct
         let extra =
           match exn with
           | Failure m -> with_dot m
-          | Eio.Io _ as exn -> with_dot (Exn.to_string exn)
+          | Sys_error _ as exn -> with_dot (Exn.to_string exn)
           | _ -> " syntax error."
         in
         Error (Err.create ~loc [ Pp.text extra ])
@@ -117,13 +118,13 @@ struct
           ~contents:pretty_printed_contents
   ;;
 
-  let pretty_print ~env ~path ~read_contents_from_stdin =
+  let pretty_print ~path ~read_contents_from_stdin =
     let contents =
       if read_contents_from_stdin
-      then Eio.Flow.read_all (Eio.Stdenv.stdin env)
-      else Eio.Path.load path
+      then In_channel.input_all stdin
+      else In_channel.read_all (Fpath.to_string path)
     in
-    find_fix_point ~path:(path |> snd |> Fpath.v) ~num_steps:0 ~contents
+    find_fix_point ~path ~num_steps:0 ~contents
   ;;
 
   let test_cmd =
@@ -133,21 +134,18 @@ struct
            "check that all %s files of the current directory can be pretty-printed"
            (Config.extensions |> String.concat ~sep:", "))
       (let%map_open.Command () = Pp_log_cli.set_config () in
-       Eio_main.run
-       @@ fun env ->
-       let cwd = Eio.Stdenv.fs env in
+       let cwd = Stdlib.Sys.getcwd () in
        let files = find_files_in_cwd_by_extensions ~cwd ~extensions:Config.extensions in
-       List.iter files ~f:(fun filename ->
-         let path = Eio.Path.(cwd / filename) in
-         Eio_writer.prerr_endline ~env ("================================: " ^ filename);
-         match pretty_print ~env ~path ~read_contents_from_stdin:false with
+       List.iter files ~f:(fun path ->
+         prerr_endline ("================================: " ^ Fpath.to_string path);
+         match pretty_print ~path ~read_contents_from_stdin:false with
          | Error e -> Err.prerr e ~reset_separator:true
          | Ok { pretty_printed_contents; result } ->
-           Eio_writer.prerr_string ~env pretty_printed_contents;
+           Out_channel.eprintf "%s%!" pretty_printed_contents;
            (match result with
             | Ok () -> ()
             | Error e ->
-              Eio_writer.prerr_endline ~env "======: errors";
+              prerr_endline "======: errors";
               Err.prerr e ~reset_separator:true)))
   ;;
 
@@ -169,13 +167,11 @@ struct
            Param.string
            ~doc:"how to access the [fmt file] command for these files"
        in
-       Eio_main.run
-       @@ fun env ->
+       let cwd = Stdlib.Sys.getcwd () in
+       let exclude = Set.of_list (module String) exclude in
        let files =
-         find_files_in_cwd_by_extensions
-           ~cwd:(Eio.Stdenv.cwd env)
-           ~extensions:Config.extensions
-         |> List.filter ~f:(fun file -> not (List.mem exclude file ~equal:String.equal))
+         find_files_in_cwd_by_extensions ~cwd ~extensions:Config.extensions
+         |> List.filter ~f:(fun file -> not (Set.mem exclude (Fpath.to_string file)))
        in
        let output_ext = ".pp.output" in
        let generate_rules ~file =
@@ -187,9 +183,12 @@ struct
              [ atom "rule"
              ; list
                  [ atom "with-stdout-to"
-                 ; atom (file ^ output_ext)
+                 ; atom (Fpath.to_string file ^ output_ext)
                  ; list
-                     ([ [ "run" ]; call; [ Printf.sprintf "%%{dep:%s}" file ] ]
+                     ([ [ "run" ]
+                      ; call
+                      ; [ Printf.sprintf "%%{dep:%s}" (Fpath.to_string file) ]
+                      ]
                       |> List.concat
                       |> List.map ~f:atom)
                  ]
@@ -201,24 +200,24 @@ struct
              ; list (atoms [ "alias"; "fmt" ])
              ; list
                  [ atom "action"
-                 ; list [ atom "diff"; atom file; atom (file ^ output_ext) ]
+                 ; list
+                     [ atom "diff"
+                     ; atom (Fpath.to_string file)
+                     ; atom (Fpath.to_string file ^ output_ext)
+                     ]
                  ]
              ]
          in
          [ pp; fmt ]
        in
-       Eio_writer.with_flow (Eio.Stdenv.stdout env)
-       @@ fun stdout ->
-       Eio_writer.writef
-         stdout
+       Out_channel.printf
          "; dune file generated by '%s' -- do not edit.\n"
          (List.map call ~f:(function
             | "file" -> "gen-dune"
             | e -> e)
           |> String.concat ~sep:" ");
        List.iter files ~f:(fun file ->
-         List.iter (generate_rules ~file) ~f:(fun sexp ->
-           Eio_writer.write_sexp stdout sexp)))
+         List.iter (generate_rules ~file) ~f:(fun sexp -> print_s sexp)))
   ;;
 
   let file_cmd =
@@ -263,16 +262,11 @@ into this issue.
        and add_extra_blank_line =
          Arg.flag [ "add-extra-blank-line" ] ~doc:"add an extra blank line at the end"
        in
-       (Eio_main.run
-        @@ fun env ->
-        let cwd = Eio.Stdenv.fs env in
-        let path = Eio.Path.(cwd / Fpath.to_string path) in
-        let%bind.Result { Pretty_print_result.pretty_printed_contents; result } =
-          pretty_print ~env ~path ~read_contents_from_stdin
+       (let%bind.Result { Pretty_print_result.pretty_printed_contents; result } =
+          pretty_print ~path ~read_contents_from_stdin
         in
-        Eio_writer.with_flow (Eio.Stdenv.stdout env) (fun stdout ->
-          Eio_writer.write_string stdout pretty_printed_contents;
-          if add_extra_blank_line then Eio_writer.write_newline stdout);
+        print_string pretty_printed_contents;
+        if add_extra_blank_line then print_endline "";
         result)
        |> Err.ok_exn)
   ;;
@@ -286,17 +280,12 @@ into this issue.
        and debug_comments =
          Arg.flag [ "debug-comments" ] ~doc:"dump comments state messages"
        in
-       Eio_main.run
-       @@ fun env ->
-       let cwd = Eio.Stdenv.fs env in
-       let path = Eio.Path.(cwd / Fpath.to_string path) in
        let (program : T.t) =
          Ref.set_temporarily Comments_parser.debug debug_comments ~f:(fun () ->
-           Parsing_utils_eio.parse_file_exn (module T_syntax) ~path)
+           Parsing_utils.parse_file_exn (module T_syntax) ~path)
        in
        Ref.set_temporarily Loc.include_sexp_of_locs with_positions ~f:(fun () ->
-         Eio_writer.with_flow (Eio.Stdenv.stdout env) (fun stdout ->
-           Eio_writer.write_sexp stdout [%sexp (program : T.t)])))
+         print_s [%sexp (program : T.t)]))
   ;;
 
   let fmt_cmd =

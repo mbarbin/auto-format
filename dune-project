@@ -31,12 +31,6 @@
    (>= 0.0.9))
   (comments-parser
    (>= 0.2.2))
-  (eio
-   (>= 1.0))
-  (eio-writer
-   (>= 0.0.3))
-  (eio_main
-   (>= 1.0))
   (fpath
    (>= 0.7.3))
   (fpath-base
@@ -44,8 +38,6 @@
   (loc
    (>= 0.2.0))
   (parsing-utils
-   (>= 0.2.2))
-  (parsing-utils-eio
    (>= 0.2.2))
   (pp
    (>= 2.0.0))
@@ -82,7 +74,11 @@
     (>= v0.17)
     (< v0.18)))
   (ppxlib
-   (>= 0.33))))
+   (>= 0.33))
+  (stdio
+   (and
+    (>= v0.17)
+    (< v0.18)))))
 
 (package
  (name auto-format-tests)
@@ -104,12 +100,6 @@
    (>= 0.0.9))
   (comments-parser
    (>= 0.2.2))
-  (eio
-   (>= 1.0))
-  (eio-writer
-   (>= 0.0.3))
-  (eio_main
-   (>= 1.0))
   (expect_test_helpers_core
    (and
     (>= v0.17)
@@ -121,8 +111,6 @@
   (loc
    (>= 0.2.0))
   (parsing-utils
-   (>= 0.2.2))
-  (parsing-utils-eio
    (>= 0.2.2))
   (pp
    (>= 2.0.0))
@@ -168,4 +156,8 @@
     (>= v0.17)
     (< v0.18)))
   (ppxlib
-   (>= 0.33))))
+   (>= 0.33))
+  (stdio
+   (and
+    (>= v0.17)
+    (< v0.18)))))
