@@ -30,7 +30,7 @@
   (cmdlang
    (>= 0.0.9))
   (comments-parser
-   (>= 0.2.2))
+   (>= 0.2.3))
   (fpath
    (>= 0.7.3))
   (fpath-base
@@ -38,7 +38,7 @@
   (loc
    (>= 0.2.0))
   (parsing-utils
-   (>= 0.2.2))
+   (>= 0.2.3))
   (pp
    (>= 2.0.0))
   (pp-extended
@@ -99,7 +99,7 @@
   (cmdlang
    (>= 0.0.9))
   (comments-parser
-   (>= 0.2.2))
+   (>= 0.2.3))
   (expect_test_helpers_core
    (and
     (>= v0.17)
@@ -111,7 +111,7 @@
   (loc
    (>= 0.2.0))
   (parsing-utils
-   (>= 0.2.2))
+   (>= 0.2.3))
   (pp
    (>= 2.0.0))
   (pp-extended
