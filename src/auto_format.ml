@@ -3,7 +3,7 @@ let find_files_in_cwd_by_extensions ~cwd ~extensions =
   |> Array.map ~f:Fpath.v
   |> Array.to_list
   |> List.filter ~f:(fun file ->
-    Stdlib.Sys.is_regular_file (Fpath.to_string file)
+    Stdlib.Sys.is_regular_file (Fpath.to_string Fpath.(v cwd // file))
     && List.exists extensions ~f:(fun extension -> Fpath.has_ext extension file))
   |> List.sort ~compare:Fpath.compare
 ;;
@@ -133,7 +133,7 @@ struct
         (Printf.sprintf
            "check that all %s files of the current directory can be pretty-printed"
            (Config.extensions |> String.concat ~sep:", "))
-      (let%map_open.Command () = Pp_log_cli.set_config () in
+      (let%map_open.Command () = Log_cli.set_config () in
        let cwd = Stdlib.Sys.getcwd () in
        let files = find_files_in_cwd_by_extensions ~cwd ~extensions:Config.extensions in
        List.iter files ~f:(fun path ->
@@ -253,7 +253,7 @@ last newline, a flag has been added to add an extra blank line, shall you run
 into this issue.
       |};
         Buffer.contents buffer)
-      (let%map_open.Command () = Pp_log_cli.set_config ()
+      (let%map_open.Command () = Log_cli.set_config ()
        and path = Arg.pos ~pos:0 Param.file ~docv:"FILE" ~doc:"file to format" >>| Fpath.v
        and read_contents_from_stdin =
          Arg.flag

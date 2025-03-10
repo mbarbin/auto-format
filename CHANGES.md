@@ -1,3 +1,9 @@
+## 0.0.15 (2025-03-10)
+
+### Changed
+
+- Switched from `pp-log` to `pplumbing`.
+
 ## 0.0.14 (2024-11-10)
 
 ### Changed

@@ -30,7 +30,7 @@
   (cmdlang
    (>= 0.0.9))
   (comments-parser
-   (>= 0.2.2))
+   (>= 0.2.3))
   (fpath
    (>= 0.7.3))
   (fpath-base
@@ -38,13 +38,13 @@
   (loc
    (>= 0.2.0))
   (parsing-utils
-   (>= 0.2.2))
+   (>= 0.2.3))
   (pp
    (>= 2.0.0))
   (pp-extended
    (>= 0.0.2))
-  (pp-log
-   (>= 0.0.8))
+  (pplumbing
+   (>= 0.0.9))
   (ppx_compare
    (and
     (>= v0.17)
@@ -99,7 +99,7 @@
   (cmdlang
    (>= 0.0.9))
   (comments-parser
-   (>= 0.2.2))
+   (>= 0.2.3))
   (expect_test_helpers_core
    (and
     (>= v0.17)
@@ -111,13 +111,13 @@
   (loc
    (>= 0.2.0))
   (parsing-utils
-   (>= 0.2.2))
+   (>= 0.2.3))
   (pp
    (>= 2.0.0))
   (pp-extended
    (>= 0.0.2))
-  (pp-log
-   (>= 0.0.8))
+  (pplumbing
+   (>= 0.0.9))
   (ppx_compare
    (and
     (>= v0.17)
