@@ -15,7 +15,7 @@ depends: [
   "comments-parser" {>= "0.2.3"}
   "fpath" {>= "0.7.3"}
   "fpath-base" {>= "0.2.2"}
-  "loc" {>= "0.2.0"}
+  "loc" {>= "0.2.2"}
   "parsing-utils" {>= "0.2.3"}
   "pp" {>= "2.0.0"}
   "pp-extended" {>= "0.0.2"}
