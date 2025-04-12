@@ -39,7 +39,7 @@ end
 module Make
     (Config : Config.S)
     (T : T)
-    (T_syntax : Parsing_utils.S with type t = T.t)
+    (T_parser : Parsing_utils.S with type t = T.t)
     (T_pp : T_pp with type t = T.t) =
 struct
   module Pretty_print_result = struct
@@ -71,7 +71,7 @@ struct
   let rec find_fix_point ~path ~num_steps ~contents =
     let%bind.Result (program : T.t) =
       Parsing_utils.parse_lexbuf
-        (module T_syntax)
+        (module T_parser)
         ~path
         ~lexbuf:(Lexing.from_string contents)
       |> Parsing_result.or_err
@@ -80,7 +80,7 @@ struct
     let ts_are_equal =
       let%map.Result (program_2 : T.t) =
         Parsing_utils.parse_lexbuf
-          (module T_syntax)
+          (module T_parser)
           ~path
           ~lexbuf:(Lexing.from_string pretty_printed_contents)
         |> Parsing_result.or_err
@@ -282,7 +282,7 @@ into this issue.
        in
        let (program : T.t) =
          Ref.set_temporarily Comments_parser.debug debug_comments ~f:(fun () ->
-           Parsing_utils.parse_file_exn (module T_syntax) ~path)
+           Parsing_utils.parse_file_exn (module T_parser) ~path)
        in
        Ref.set_temporarily Loc.include_sexp_of_locs with_positions ~f:(fun () ->
          print_s [%sexp (program : T.t)]))
