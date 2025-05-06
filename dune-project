@@ -44,7 +44,7 @@
   (pp-extended
    (>= 0.0.2))
   (pplumbing
-   (>= 0.0.9))
+   (>= 0.0.12))
   (ppx_compare
    (and
     (>= v0.17)
@@ -117,7 +117,7 @@
   (pp-extended
    (>= 0.0.2))
   (pplumbing
-   (>= 0.0.9))
+   (>= 0.0.12))
   (ppx_compare
    (and
     (>= v0.17)
