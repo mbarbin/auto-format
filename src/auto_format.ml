@@ -97,16 +97,14 @@ struct
     | Ok false ->
       Ok
         { Pretty_print_result.pretty_printed_contents
-        ; result = Error (Err.create [ Pp.text "AST changed during pretty-printing" ])
+        ; result = Error (Err.create [ Pp.text "AST changed during pretty-printing." ])
         }
     | Error e ->
       Ok
         { Pretty_print_result.pretty_printed_contents
         ; result =
             Error
-              (Err.append
-                 (Err.create [ Pp.text "Pretty-printing produced invalid syntax" ])
-                 e)
+              (Err.add_context e [ Pp.text "Pretty-printing produced invalid syntax." ])
         }
     | Ok true ->
       if String.equal pretty_printed_contents contents
