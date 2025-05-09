@@ -175,34 +175,30 @@ struct
        let generate_rules ~file =
          let list s = Sexp.List s
          and atom s = Sexp.Atom s in
-         let atoms s = List.map s ~f:atom in
+         let atoms s = Sexp.List (List.map s ~f:atom) in
          let pp =
            list
              [ atom "rule"
              ; list
                  [ atom "with-stdout-to"
                  ; atom (Fpath.to_string file ^ output_ext)
-                 ; list
+                 ; atoms
                      ([ [ "run" ]
                       ; call
                       ; [ Printf.sprintf "%%{dep:%s}" (Fpath.to_string file) ]
                       ]
-                      |> List.concat
-                      |> List.map ~f:atom)
+                      |> List.concat)
                  ]
              ]
          in
          let fmt =
            list
              [ atom "rule"
-             ; list (atoms [ "alias"; "fmt" ])
+             ; atoms [ "alias"; "fmt" ]
              ; list
                  [ atom "action"
-                 ; list
-                     [ atom "diff"
-                     ; atom (Fpath.to_string file)
-                     ; atom (Fpath.to_string file ^ output_ext)
-                     ]
+                 ; atoms
+                     [ "diff"; Fpath.to_string file; Fpath.to_string file ^ output_ext ]
                  ]
              ]
          in
