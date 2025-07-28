@@ -1,3 +1,10 @@
+## 0.0.17 (2025-07-28)
+
+### Changed
+
+- More consistent cli commands and args doc strings.
+- Upgrade to `pplumbing.0.0.14`.
+
 ## 0.0.16 (2025-05-06)
 
 ### Changed
