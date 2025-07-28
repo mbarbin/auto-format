@@ -129,7 +129,7 @@ struct
     Command.make
       ~summary:
         (Printf.sprintf
-           "check that all %s files of the current directory can be pretty-printed"
+           "Check that all %s files of the current directory can be pretty-printed."
            (Config.extensions |> String.concat ~sep:", "))
       (let%map_open.Command () = Log_cli.set_config () in
        let cwd = Stdlib.Sys.getcwd () in
@@ -151,7 +151,8 @@ struct
     Command.make
       ~summary:
         (Printf.sprintf
-           "generate dune stanza for all %s files present in the cwd to be pretty-printed"
+           "Generate dune stanza for all %s files present in the cwd to be \
+            pretty-printed."
            (Config.extensions |> String.concat ~sep:", "))
       (let%map_open.Command exclude =
          Arg.named_with_default
@@ -159,11 +160,11 @@ struct
            (Param.comma_separated Param.string)
            ~default:[]
            ~docv:"FILE"
-           ~doc:"files to exclude"
+           ~doc:"Files to exclude."
        and call =
          Arg.pos_all
            Param.string
-           ~doc:"how to access the [fmt file] command for these files"
+           ~doc:"How to access the [fmt file] command for these files."
        in
        let cwd = Stdlib.Sys.getcwd () in
        let exclude = Set.of_list (module String) exclude in
@@ -216,7 +217,7 @@ struct
 
   let file_cmd =
     Command.make
-      ~summary:(Printf.sprintf "autoformat %s files" Config.language_id)
+      ~summary:(Printf.sprintf "Autoformat %s files." Config.language_id)
       ~readme:(fun () ->
         let buffer = Buffer.create 256 in
         Stdlib.Buffer.add_substitute
@@ -225,36 +226,31 @@ struct
             | "LANG" -> Config.language_id
             | "EXTS" -> String.concat ~sep:", " Config.extensions
             | o -> raise_s [%sexp "Substitution not found", (o : string)])
-          {|
-This is a pretty-print command for ${LANG} files (extensions ${EXTS}).
-
-This reads the contents of a file supplied in the command line, and
-pretty-print it on stdout, leaving the original file unchanged.
-
-If [--read-contents-from-stdin] is supplied, then the contents of the file is
-read from stdin. In this case the filename must still be supplied, and will be
-used for located error messages only.
-
-In case of syntax errors or other issues, some contents may still be printed
-to stdout, however the exit code will be non zero (typically [1]). Errors are
-printed on stderr.
-
-The hope for this command is for it to be compatible with editors and build
-systems so that you can integrate autoformatting of files into your workflow.
-
-Because this command has been tested with a vscode extension that strips the
-last newline, a flag has been added to add an extra blank line, shall you run
-into this issue.
-      |};
+          "This is a pretty-print command for ${LANG} files (extensions ${EXTS}).\n\n\
+           This reads the contents of a file supplied in the command line, and \
+           pretty-print it on stdout, leaving the original file unchanged.\n\n\
+           If [--read-contents-from-stdin] is supplied, then the contents of the file is \
+           read from stdin. In this case the filename must still be supplied, and will \
+           be used for located error messages only.\n\n\
+           In case of syntax errors or other issues, some contents may still be printed \
+           to stdout, however the exit code will be non zero (typically [1]). Errors are \
+           printed on stderr.\n\n\
+           The hope for this command is for it to be compatible with editors and build \
+           systems so that you can integrate autoformatting of files into your \
+           workflow.\n\n\
+           Because this command has been tested with a vscode extension that strips the \
+           last newline, a flag has been added to add an extra blank line, shall you run \
+           into this issue.";
         Buffer.contents buffer)
       (let%map_open.Command () = Log_cli.set_config ()
-       and path = Arg.pos ~pos:0 Param.file ~docv:"FILE" ~doc:"file to format" >>| Fpath.v
+       and path =
+         Arg.pos ~pos:0 Param.file ~docv:"FILE" ~doc:"File to format." >>| Fpath.v
        and read_contents_from_stdin =
          Arg.flag
            [ "read-contents-from-stdin" ]
-           ~doc:"read contents from stdin rather than from the file"
+           ~doc:"Read contents from stdin rather than from the file."
        and add_extra_blank_line =
-         Arg.flag [ "add-extra-blank-line" ] ~doc:"add an extra blank line at the end"
+         Arg.flag [ "add-extra-blank-line" ] ~doc:"Add an extra blank line at the end."
        in
        (let%bind.Result { Pretty_print_result.pretty_printed_contents; result } =
           pretty_print ~path ~read_contents_from_stdin
@@ -267,12 +263,12 @@ into this issue.
 
   let dump_cmd =
     Command.make
-      ~summary:"dump a parsed tree on stdout"
+      ~summary:"Dump a parsed tree on stdout."
       (let%map_open.Command path =
-         Arg.pos ~pos:0 Param.file ~docv:"FILE" ~doc:"file to dump" >>| Fpath.v
-       and with_positions = Arg.flag [ "loc" ] ~doc:"dump loc details"
+         Arg.pos ~pos:0 Param.file ~docv:"FILE" ~doc:"File to dump." >>| Fpath.v
+       and with_positions = Arg.flag [ "loc" ] ~doc:"Dump loc details."
        and debug_comments =
-         Arg.flag [ "debug-comments" ] ~doc:"dump comments state messages"
+         Arg.flag [ "debug-comments" ] ~doc:"Dump comments state messages."
        in
        let (program : T.t) =
          Ref.set_temporarily Comments_parser.debug debug_comments ~f:(fun () ->
@@ -284,7 +280,7 @@ into this issue.
 
   let fmt_cmd =
     Command.group
-      ~summary:"commands related to auto-formatting"
+      ~summary:"Commands related to auto-formatting."
       [ "dump", dump_cmd; "file", file_cmd; "test", test_cmd; "gen-dune", gen_dune_cmd ]
   ;;
 end
