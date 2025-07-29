@@ -131,7 +131,8 @@ struct
         (Printf.sprintf
            "Check that all %s files of the current directory can be pretty-printed."
            (Config.extensions |> String.concat ~sep:", "))
-      (let%map_open.Command () = Log_cli.set_config () in
+      (let open Command.Std in
+       let+ () = Log_cli.set_config () in
        let cwd = Stdlib.Sys.getcwd () in
        let files = find_files_in_cwd_by_extensions ~cwd ~extensions:Config.extensions in
        List.iter files ~f:(fun path ->
@@ -154,14 +155,15 @@ struct
            "Generate dune stanza for all %s files present in the cwd to be \
             pretty-printed."
            (Config.extensions |> String.concat ~sep:", "))
-      (let%map_open.Command exclude =
+      (let open Command.Std in
+       let+ exclude =
          Arg.named_with_default
            [ "exclude" ]
            (Param.comma_separated Param.string)
            ~default:[]
            ~docv:"FILE"
            ~doc:"Files to exclude."
-       and call =
+       and+ call =
          Arg.pos_all
            Param.string
            ~doc:"How to access the [fmt file] command for these files."
@@ -242,14 +244,15 @@ struct
            last newline, a flag has been added to add an extra blank line, shall you run \
            into this issue.";
         Buffer.contents buffer)
-      (let%map_open.Command () = Log_cli.set_config ()
-       and path =
+      (let open Command.Std in
+       let+ () = Log_cli.set_config ()
+       and+ path =
          Arg.pos ~pos:0 Param.file ~docv:"FILE" ~doc:"File to format." >>| Fpath.v
-       and read_contents_from_stdin =
+       and+ read_contents_from_stdin =
          Arg.flag
            [ "read-contents-from-stdin" ]
            ~doc:"Read contents from stdin rather than from the file."
-       and add_extra_blank_line =
+       and+ add_extra_blank_line =
          Arg.flag [ "add-extra-blank-line" ] ~doc:"Add an extra blank line at the end."
        in
        (let%bind.Result { Pretty_print_result.pretty_printed_contents; result } =
@@ -264,10 +267,10 @@ struct
   let dump_cmd =
     Command.make
       ~summary:"Dump a parsed tree on stdout."
-      (let%map_open.Command path =
-         Arg.pos ~pos:0 Param.file ~docv:"FILE" ~doc:"File to dump." >>| Fpath.v
-       and with_positions = Arg.flag [ "loc" ] ~doc:"Dump loc details."
-       and debug_comments =
+      (let open Command.Std in
+       let+ path = Arg.pos ~pos:0 Param.file ~docv:"FILE" ~doc:"File to dump." >>| Fpath.v
+       and+ with_positions = Arg.flag [ "loc" ] ~doc:"Dump loc details."
+       and+ debug_comments =
          Arg.flag [ "debug-comments" ] ~doc:"Dump comments state messages."
        in
        let (program : T.t) =
