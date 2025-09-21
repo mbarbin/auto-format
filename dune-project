@@ -41,8 +41,10 @@
    (>= 2.0.0))
   (pp-extended
    (>= 0.0.2))
-  (pplumbing
-   (>= 0.0.14))
+  (pplumbing-err
+   (>= 0.0.16))
+  (pplumbing-log-cli
+   (>= 0.0.16))
   (ppx_compare
    (>= v0.17))
   (ppx_enumerate
@@ -94,8 +96,10 @@
    (>= 2.0.0))
   (pp-extended
    (>= 0.0.2))
-  (pplumbing
-   (>= 0.0.14))
+  (pplumbing-err
+   (>= 0.0.16))
+  (pplumbing-log-cli
+   (>= 0.0.16))
   (ppx_compare
    (>= v0.17))
   (ppx_enumerate
