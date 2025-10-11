@@ -27,8 +27,6 @@
    (>= v0.17))
   (cmdlang
    (>= 0.0.9))
-  (comments-parser
-   (>= 0.2.3))
   (fpath
    (>= 0.7.3))
   (fpath-base
@@ -80,8 +78,6 @@
    (>= v0.17))
   (cmdlang
    (>= 0.0.9))
-  (comments-parser
-   (>= 0.2.3))
   (expect_test_helpers_core
    (>= v0.17))
   (fpath

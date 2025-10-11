@@ -22,7 +22,6 @@
  (libraries
   base
   cmdlang
-  comments-parser
   fpath
   fpath-base
   loc

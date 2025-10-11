@@ -12,7 +12,6 @@ depends: [
   "ocaml" {>= "5.2"}
   "base" {>= "v0.17"}
   "cmdlang" {>= "0.0.9"}
-  "comments-parser" {>= "0.2.3"}
   "fpath" {>= "0.7.3"}
   "fpath-base" {>= "0.2.2"}
   "loc" {>= "0.2.2"}
