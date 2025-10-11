@@ -269,14 +269,8 @@ struct
       ~summary:"Dump a parsed tree on stdout."
       (let open Command.Std in
        let+ path = Arg.pos ~pos:0 Param.file ~docv:"FILE" ~doc:"File to dump." >>| Fpath.v
-       and+ with_positions = Arg.flag [ "loc" ] ~doc:"Dump loc details."
-       and+ debug_comments =
-         Arg.flag [ "debug-comments" ] ~doc:"Dump comments state messages."
-       in
-       let (program : T.t) =
-         Ref.set_temporarily Comments_parser.debug debug_comments ~f:(fun () ->
-           Parsing_utils.parse_file_exn (module T_parser) ~path)
-       in
+       and+ with_positions = Arg.flag [ "loc" ] ~doc:"Dump loc details." in
+       let (program : T.t) = Parsing_utils.parse_file_exn (module T_parser) ~path in
        Ref.set_temporarily Loc.include_sexp_of_locs with_positions ~f:(fun () ->
          print_s [%sexp (program : T.t)]))
   ;;
