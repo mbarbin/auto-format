@@ -1,3 +1,10 @@
+## 0.0.18 (2025-10-19)
+
+### Changed
+
+- Remove dependency to `comments-parser` (#10, @mbarbin).
+- Use split `pplumbing-*` pkgs (#9, @mbarbin).
+
 ## 0.0.17 (2025-07-28)
 
 ### Changed
