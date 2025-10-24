@@ -121,7 +121,7 @@
   (ocaml
    (>= 5.2))
   (ocamlformat
-   (= 0.27.0))
+   (= 0.28.1))
   (auto-format
    (= :version))
   (auto-format-tests
