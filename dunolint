@@ -1,0 +1,12 @@
+(lang dunolint 1.0)
+
+;; Test lib naming
+(rule
+ (cond
+  ((path (glob test/**))
+   (enforce
+    (dune
+     (library
+      (and
+       (not (has_field public_name))
+       (name (is_suffix _test)))))))))

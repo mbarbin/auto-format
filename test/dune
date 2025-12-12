@@ -1,6 +1,6 @@
 (library
  (name auto_format_test)
- (public_name auto-format-tests.auto_format_test)
+ (package auto-format-tests)
  (inline_tests)
  (flags
   :standard
