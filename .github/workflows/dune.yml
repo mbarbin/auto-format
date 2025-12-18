@@ -1,0 +1,28 @@
+name: Build and test with setup-dune
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - "**" # This will match pull requests targeting any branch
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os:
+          - macos-latest
+          - ubuntu-latest
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Dune Pkg CI
+        uses: mbarbin/setup-dune@b82674889b0fec50f3569ce2bfa9b39aef1d6abf # repkg
+        with:
+          steps: all
