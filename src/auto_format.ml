@@ -1,3 +1,9 @@
+(****************************************************************************)
+(*  auto-format: Build auto-format commands for custom languages            *)
+(*  SPDX-FileCopyrightText: 2023 Mathieu Barbin <mathieu.barbin@gmail.com>  *)
+(*  SPDX-License-Identifier: MIT                                            *)
+(****************************************************************************)
+
 let find_files_in_cwd_by_extensions ~cwd ~extensions =
   Stdlib.Sys.readdir cwd
   |> Array.map ~f:Fpath.v

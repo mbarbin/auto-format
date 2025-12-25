@@ -1,3 +1,9 @@
+(*_***************************************************************************)
+(*_  auto-format: Build auto-format commands for custom languages            *)
+(*_  SPDX-FileCopyrightText: 2023 Mathieu Barbin <mathieu.barbin@gmail.com>  *)
+(*_  SPDX-License-Identifier: MIT                                            *)
+(*_***************************************************************************)
+
 (** Shared place to implement common [fmt] related commands, with the ability to
     control that the AST doesn't change, and reaches a fix point.
 
