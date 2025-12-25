@@ -1,4 +1,4 @@
-(lang dune 3.17)
+(lang dune 3.18)
 
 (name auto-format)
 
@@ -19,7 +19,7 @@
 
 (package
  (name auto-format)
- (synopsis "Utils to build auto format commands for custom languages")
+ (synopsis "Build auto-format commands for custom languages")
  (depends
   (ocaml
    (>= 5.2))
@@ -38,7 +38,9 @@
   (pp
    (>= 2.0.0))
   (pp-extended
-   (>= 0.0.2))
+   (and
+    (>= 0.0.2)
+    (< 0.0.7)))
   (pplumbing-err
    (>= 0.0.16))
   (pplumbing-log-cli
