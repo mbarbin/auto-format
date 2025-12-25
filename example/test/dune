@@ -1,0 +1,22 @@
+(include dune.myconf.inc)
+
+(rule
+ (target dune.myconf.inc.raw)
+ (deps
+  (glob_files *.myconf))
+ (action
+  (with-stdout-to
+   %{target}
+   (run %{bin:myconf} fmt gen-dune "\%{bin:myconf}" fmt file))))
+
+(rule
+ (alias runtest)
+ (mode promote)
+ (action
+  (format-dune-file dune.myconf.inc.raw dune.myconf.inc)))
+
+(cram
+ (package auto-format-example)
+ (deps
+  (package auto-format-example)
+  (glob_files *.myconf)))
