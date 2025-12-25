@@ -4,12 +4,14 @@
 (*  SPDX-License-Identifier: MIT                                            *)
 (****************************************************************************)
 
+module Sexp = Sexplib0.Sexp
+
 let find_files_in_cwd_by_extensions ~cwd ~extensions =
-  Stdlib.Sys.readdir cwd
+  Sys.readdir cwd
   |> Array.map ~f:Fpath.v
   |> Array.to_list
   |> List.filter ~f:(fun file ->
-    Stdlib.Sys.is_regular_file (Fpath.to_string Fpath.(v cwd // file))
+    Sys.is_regular_file (Fpath.to_string Fpath.(v cwd // file))
     && List.exists extensions ~f:(fun extension -> Fpath.has_ext extension file))
   |> List.sort ~compare:Fpath.compare
 ;;
@@ -17,16 +19,21 @@ let find_files_in_cwd_by_extensions ~cwd ~extensions =
 let allow_changes =
   lazy
     (let var = "AUTO_FORMAT_ALLOW_CHANGES" in
-     match Sys.getenv var with
+     match Sys.getenv_opt var with
      | Some "true" -> true
      | None | Some "false" -> false
      | Some value ->
-       raise_s
-         [%sexp "Unexpected value for env var", [%here], { var : string; value : string }])
+       Err.raise
+         [ Pp.text "Unexpected value for env var."
+         ; Dyn.pp (Dyn.record [ "var", var |> Dyn.string; "value", value |> Dyn.string ])
+         ])
 ;;
 
 module type T = sig
-  type t [@@deriving equal, sexp_of]
+  type t
+
+  val equal : t -> t -> bool
+  val sexp_of_t : t -> Sexp.t
 end
 
 module type T_pp = sig
@@ -58,7 +65,7 @@ struct
   module Parsing_result = struct
     type 'a t = 'a Parsing_utils.Parsing_result.t
 
-    let with_dot m = if String.is_suffix m ~suffix:"." then m else m ^ "."
+    let with_dot m = if String.ends_with m ~suffix:"." then m else m ^ "."
 
     let or_err (t : _ t) =
       match t with
@@ -67,7 +74,7 @@ struct
         let extra =
           match exn with
           | Failure m -> with_dot m
-          | Sys_error _ as exn -> with_dot (Exn.to_string exn)
+          | Sys_error _ as exn -> with_dot (Printexc.to_string exn)
           | _ -> " syntax error."
         in
         Error (Err.create ~loc [ Pp.text extra ])
@@ -75,16 +82,17 @@ struct
   end
 
   let rec find_fix_point ~path ~num_steps ~contents =
-    let%bind.Result (program : T.t) =
+    let open Result.Syntax in
+    let* (program : T.t) =
       Parsing_utils.parse_lexbuf
         (module T_parser)
         ~path
         ~lexbuf:(Lexing.from_string contents)
       |> Parsing_result.or_err
     in
-    let pretty_printed_contents = Pp_extended.to_string (T_pp.pp program) in
+    let pretty_printed_contents = Pp.render (T_pp.pp program) in
     let ts_are_equal =
-      let%map.Result (program_2 : T.t) =
+      let+ (program_2 : T.t) =
         Parsing_utils.parse_lexbuf
           (module T_parser)
           ~path
@@ -96,7 +104,7 @@ struct
     in
     let ts_are_equal =
       match ts_are_equal with
-      | Ok false -> if force allow_changes then Ok true else ts_are_equal
+      | Ok false -> if Lazy.force allow_changes then Ok true else ts_are_equal
       | (Ok true | Error _) as t -> t
     in
     match ts_are_equal with
@@ -126,7 +134,7 @@ struct
     let contents =
       if read_contents_from_stdin
       then In_channel.input_all stdin
-      else In_channel.read_all (Fpath.to_string path)
+      else In_channel.with_open_bin (Fpath.to_string path) In_channel.input_all
     in
     find_fix_point ~path ~num_steps:0 ~contents
   ;;
@@ -139,14 +147,15 @@ struct
            (Config.extensions |> String.concat ~sep:", "))
       (let open Command.Std in
        let+ () = Log_cli.set_config () in
-       let cwd = Stdlib.Sys.getcwd () in
+       let cwd = Sys.getcwd () in
        let files = find_files_in_cwd_by_extensions ~cwd ~extensions:Config.extensions in
        List.iter files ~f:(fun path ->
          prerr_endline ("================================: " ^ Fpath.to_string path);
          match pretty_print ~path ~read_contents_from_stdin:false with
          | Error e -> Err.prerr e ~reset_separator:true
          | Ok { pretty_printed_contents; result } ->
-           Out_channel.eprintf "%s%!" pretty_printed_contents;
+           Out_channel.output_string Out_channel.stderr pretty_printed_contents;
+           Out_channel.flush Out_channel.stderr;
            (match result with
             | Ok () -> ()
             | Error e ->
@@ -174,11 +183,16 @@ struct
            Param.string
            ~doc:"How to access the [fmt file] command for these files."
        in
-       let cwd = Stdlib.Sys.getcwd () in
-       let exclude = Set.of_list (module String) exclude in
+       let cwd = Sys.getcwd () in
+       let exclude =
+         (* Acknowledging use of polymorphic hashtbl with [string] keys. *)
+         let t : (string, unit) Hashtbl.t = Hashtbl.create (List.length exclude) in
+         List.iter exclude ~f:(fun s -> Hashtbl.add t s ());
+         t
+       in
        let files =
          find_files_in_cwd_by_extensions ~cwd ~extensions:Config.extensions
-         |> List.filter ~f:(fun file -> not (Set.mem exclude (Fpath.to_string file)))
+         |> List.filter ~f:(fun file -> not (Hashtbl.mem exclude (Fpath.to_string file)))
        in
        let output_ext = ".pp.output" in
        let generate_rules ~file =
@@ -213,14 +227,17 @@ struct
          in
          [ pp; fmt ]
        in
-       Out_channel.printf
-         "; dune file generated by '%s' -- do not edit.\n"
-         (List.map call ~f:(function
-            | "file" -> "gen-dune"
-            | e -> e)
-          |> String.concat ~sep:" ");
+       Out_channel.output_string
+         Out_channel.stdout
+         (Printf.sprintf
+            "; dune file generated by '%s' -- do not edit.\n"
+            (List.map call ~f:(function
+               | "file" -> "gen-dune"
+               | e -> e)
+             |> String.concat ~sep:" "));
        List.iter files ~f:(fun file ->
-         List.iter (generate_rules ~file) ~f:(fun sexp -> print_s sexp)))
+         List.iter (generate_rules ~file) ~f:(fun sexp ->
+           print_endline (Sexp.to_string_hum sexp))))
   ;;
 
   let file_cmd =
@@ -228,12 +245,13 @@ struct
       ~summary:(Printf.sprintf "Autoformat %s files." Config.language_id)
       ~readme:(fun () ->
         let buffer = Buffer.create 256 in
-        Stdlib.Buffer.add_substitute
+        Buffer.add_substitute
           buffer
           (function
             | "LANG" -> Config.language_id
             | "EXTS" -> String.concat ~sep:", " Config.extensions
-            | o -> raise_s [%sexp "Substitution not found", (o : string)])
+            | var ->
+              Code_error.raise "Substitution not found" [ "var", var |> Dyn.string ])
           "This is a pretty-print command for ${LANG} files (extensions ${EXTS}).\n\n\
            This reads the contents of a file supplied in the command line, and \
            pretty-print it on stdout, leaving the original file unchanged.\n\n\
@@ -261,7 +279,8 @@ struct
        and+ add_extra_blank_line =
          Arg.flag [ "add-extra-blank-line" ] ~doc:"Add an extra blank line at the end."
        in
-       (let%bind.Result { Pretty_print_result.pretty_printed_contents; result } =
+       (let open Result.Syntax in
+        let* { Pretty_print_result.pretty_printed_contents; result } =
           pretty_print ~path ~read_contents_from_stdin
         in
         print_string pretty_printed_contents;
@@ -278,7 +297,7 @@ struct
        and+ with_positions = Arg.flag [ "loc" ] ~doc:"Dump loc details." in
        let (program : T.t) = Parsing_utils.parse_file_exn (module T_parser) ~path in
        Ref.set_temporarily Loc.include_sexp_of_locs with_positions ~f:(fun () ->
-         print_s [%sexp (program : T.t)]))
+         print_endline (Sexp.to_string_hum (program |> T.sexp_of_t))))
   ;;
 
   let fmt_cmd =

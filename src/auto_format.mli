@@ -11,7 +11,10 @@
     [dune fmt] rule to auto-format files with custom syntax. *)
 
 module type T = sig
-  type t [@@deriving equal, sexp_of]
+  type t
+
+  val equal : t -> t -> bool
+  val sexp_of_t : t -> Sexplib0.Sexp.t
 end
 
 module type T_pp = sig
