@@ -1,0 +1,4 @@
+# This is a config file
+# With multiple comments
+name = "test"
+value = 123

@@ -11,4 +11,10 @@ The code documentation of the latest release is built with `odoc` and published 
 
 ## Examples & tests
 
-As of yet, there are no examples or tests in this repository. However, this library is extensively used and tested in the [bopkit](https://github.com/mbarbin/bopkit) project.
+The `example/` contains the implementation of a toy `key=value` config language, which includes a parser, a pretty-printer and `auto-fmt` utils built with the library.
+
+You can see examples of cli usage in `example/test/run.t`, and an example of `dune fmt` integration in `example/test/dune`.
+
+## See Also
+
+This library is extensively used and tested in the [bopkit](https://github.com/mbarbin/bopkit) project.
