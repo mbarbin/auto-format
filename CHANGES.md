@@ -1,3 +1,9 @@
+## 0.0.XX (unreleased)
+
+### Added
+
+- Added an example using the lib (#15, @mbarbin).
+
 ## 0.0.19 (2025-12-25)
 
 ### Added
