@@ -1,7 +1,6 @@
 (library
- (name auto_format_test)
- (package auto-format-tests)
- (inline_tests)
+ (name auto_format_stdlib)
+ (public_name auto-format.stdlib)
  (flags
   :standard
   -w
@@ -9,11 +8,10 @@
   -warn-error
   +a
   -open
-  Auto_format_stdlib)
- (libraries auto_format auto_format_stdlib)
+  Pplumbing_err)
+ (libraries dyn ordering pp pplumbing-err)
  (instrumentation
   (backend bisect_ppx))
  (lint
   (pps ppx_js_style -allow-let-operators -check-doc-comments))
- (preprocess
-  (pps ppx_expect)))
+ (preprocess no_preprocessing))

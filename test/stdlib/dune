@@ -1,5 +1,5 @@
 (library
- (name auto_format_test)
+ (name auto_format_stdlib_test)
  (package auto-format-tests)
  (inline_tests)
  (flags
@@ -10,7 +10,7 @@
   +a
   -open
   Auto_format_stdlib)
- (libraries auto_format auto_format_stdlib)
+ (libraries auto_format_stdlib)
  (instrumentation
   (backend bisect_ppx))
  (lint

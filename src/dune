@@ -8,38 +8,24 @@
   -warn-error
   +a
   -open
-  Base
-  -open
-  Fpath_base
-  -open
-  Pplumbing_err
+  Fpath_sexp0
   -open
   Pplumbing_log_cli
   -open
-  Stdio
+  Cmdlang
   -open
-  Cmdlang)
+  Auto_format_stdlib)
  (libraries
-  base
+  auto_format_stdlib
   cmdlang
   fpath
-  fpath-base
+  fpath-sexp0
   loc
   parsing-utils
-  pp
-  pp-extended
-  pplumbing-err
   pplumbing-log-cli
-  stdio)
+  sexplib0)
+ (instrumentation
+  (backend bisect_ppx))
  (lint
   (pps ppx_js_style -allow-let-operators -check-doc-comments))
- (preprocess
-  (pps
-   -unused-code-warnings=force
-   ppx_compare
-   ppx_enumerate
-   ppx_hash
-   ppx_here
-   ppx_let
-   ppx_sexp_conv
-   ppx_sexp_value)))
+ (preprocess no_preprocessing))

@@ -1,5 +1,15 @@
 (lang dunolint 1.0)
 
+;; Everything (or almost) is instrumented
+(rule
+ (cond
+  ((path (glob example/src/*)) return)
+  (true
+   (enforce
+    (dune
+     (instrumentation
+     (backend bisect_ppx)))))))
+
 ;; Test lib naming
 (rule
  (cond
@@ -10,3 +20,31 @@
       (and
        (not (has_field public_name))
        (name (is_suffix _test)))))))))
+
+;; Configure the ppx_js_style linter
+(rule
+ (cond
+  ((path (glob example/src/*)) return)
+  (true
+   (enforce
+    (dune
+     (lint
+      (pps
+       (and
+        (pp ppx_js_style)
+        (flag
+         (name -allow-let-operators)
+         (param none)
+         (applies_to (pp ppx_js_style)))
+        (flag
+         (name -check-doc-comments)
+         (param none)
+         (applies_to (pp ppx_js_style)))))))))))
+
+;; No preprocessing
+(rule
+ (cond
+  ((path (glob src/**))
+   (enforce
+    (dune
+     (preprocess no_preprocessing))))))
