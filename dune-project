@@ -15,9 +15,9 @@
 
 (documentation "https://mbarbin.github.io/auto-format/")
 
-(implicit_transitive_deps false)
-
 (using menhir 3.0)
+
+(implicit_transitive_deps false)
 
 (package
  (name auto-format)
