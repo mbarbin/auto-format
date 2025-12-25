@@ -1,3 +1,15 @@
+## 0.0.19 (2025-12-25)
+
+### Added
+
+- Enabled `dunolint` workflow (#12, @mbarbin).
+
+### Changed
+
+- Reduce project dependencies (#14, @mbarbin).
+- Experiment with CI based on `setup-dune`.
+- Enable `OCaml 5.4` in CI.
+
 ## 0.0.18 (2025-10-19)
 
 ### Changed
