@@ -4,6 +4,18 @@
 (*  SPDX-License-Identifier: MIT                                            *)
 (****************************************************************************)
 
+(* ----------------------------------------------------------------------------
+
+   The tests for the [render] function are copied from the repo [pp-extended]
+   version [0.0.7] which is released under MIT and may be found at:
+   [https://github.com/mbarbin/pp-extended]. *)
+
+(****************************************************************************)
+(*  pp-extended: Adding a few functions to Pp                               *)
+(*  SPDX-FileCopyrightText: 2023 Mathieu Barbin <mathieu.barbin@gmail.com>  *)
+(*  SPDX-License-Identifier: MIT                                            *)
+(****************************************************************************)
+
 let%expect_test "render" =
   let pp =
     Pp.box
@@ -99,3 +111,5 @@ let%expect_test "render - standalone CR treated as content" =
   show_string (Pp.render pp2);
   [%expect {| "Hello\r\n" |}]
 ;;
+
+(* ---------------------------------------------------------------------------- *)

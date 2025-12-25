@@ -8,6 +8,18 @@ include module type of struct
   include Pp
 end
 
+(*_ ----------------------------------------------------------------------------
+
+  The [render] function is copied from the repo [pp-extended] version [0.0.7]
+  which is released under MIT and may be found at:
+  [https://github.com/mbarbin/pp-extended]. *)
+
+(*_***************************************************************************)
+(*_  pp-extended: Adding a few functions to Pp                               *)
+(*_  SPDX-FileCopyrightText: 2023 Mathieu Barbin <mathieu.barbin@gmail.com>  *)
+(*_  SPDX-License-Identifier: MIT                                            *)
+(*_***************************************************************************)
+
 (** Renders a [Pp.t] to a string with trailing whitespace stripped from each
     line.
 
@@ -45,3 +57,5 @@ end
 
     Empty input produces empty output (no trailing newline is added). *)
 val render : _ Pp.t -> string
+
+(*_ ---------------------------------------------------------------------------- *)
