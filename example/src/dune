@@ -2,7 +2,7 @@
  (name myconf)
  (package auto-format-example)
  (flags :standard -w +a-4-40-41-42-44-45-48-66 -warn-error +a)
- (libraries auto-format loc parsing-utils pp sexplib0)
+ (libraries loc parsing-utils pp sexplib0)
  (preprocess no_preprocessing))
 
 (ocamllex lexer)
