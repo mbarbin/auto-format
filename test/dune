@@ -10,7 +10,7 @@
   +a
   -open
   Auto_format_stdlib)
- (libraries auto_format auto_format_stdlib)
+ (libraries auto_format_stdlib)
  (instrumentation
   (backend bisect_ppx))
  (lint
