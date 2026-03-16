@@ -5,5 +5,7 @@
 (*_***************************************************************************)
 
 include module type of struct
-  include Stdlib0
+  include Stdlib.StringLabels
 end
+
+val concat : t list -> sep:t -> t

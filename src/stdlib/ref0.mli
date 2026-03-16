@@ -4,6 +4,4 @@
 (*_  SPDX-License-Identifier: MIT                                            *)
 (*_***************************************************************************)
 
-include module type of struct
-  include Stdlib0
-end
+val set_temporarily : 'a ref -> 'a -> f:(unit -> 'b) -> 'b

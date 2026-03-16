@@ -5,5 +5,5 @@
 (*_***************************************************************************)
 
 include module type of struct
-  include Stdlib0
+  include Dyn
 end
