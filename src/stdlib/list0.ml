@@ -4,4 +4,9 @@
 (*  SPDX-License-Identifier: MIT                                            *)
 (****************************************************************************)
 
-include Stdlib0
+include Stdlib.ListLabels
+
+let exists t ~f = exists ~f t
+let filter t ~f = filter ~f t
+let map t ~f = map ~f t
+let sort t ~compare = sort ~cmp:compare t

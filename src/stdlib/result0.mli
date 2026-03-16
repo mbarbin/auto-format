@@ -5,5 +5,11 @@
 (*_***************************************************************************)
 
 include module type of struct
-  include Stdlib0
+  include Stdlib.Result
+end
+
+(*_ Only available since [5.4] and currently supporting from [5.2]. *)
+module Syntax : sig
+  val ( let* ) : ('a, 'e) result -> ('a -> ('b, 'e) result) -> ('b, 'e) result
+  val ( let+ ) : ('a, 'e) result -> ('a -> 'b) -> ('b, 'e) result
 end

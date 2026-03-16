@@ -4,4 +4,9 @@
 (*  SPDX-License-Identifier: MIT                                            *)
 (****************************************************************************)
 
-include Stdlib0
+include Stdlib.Result
+
+module Syntax = struct
+  let ( let* ) x f = bind x f
+  let ( let+ ) x f = map f x
+end

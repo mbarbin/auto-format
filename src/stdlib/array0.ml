@@ -4,4 +4,6 @@
 (*  SPDX-License-Identifier: MIT                                            *)
 (****************************************************************************)
 
-include Stdlib0
+include Stdlib.ArrayLabels
+
+let map t ~f = map ~f t

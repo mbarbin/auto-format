@@ -4,4 +4,8 @@
 (*  SPDX-License-Identifier: MIT                                            *)
 (****************************************************************************)
 
-include Stdlib0
+let set_temporarily t a ~f =
+  let x = !t in
+  t := a;
+  Fun.protect ~finally:(fun () -> t := x) f
+;;

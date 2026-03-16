@@ -5,5 +5,7 @@
 (*_***************************************************************************)
 
 include module type of struct
-  include Stdlib0
+  include Stdlib.ArrayLabels
 end
+
+val map : 'a t -> f:('a -> 'b) -> 'b t
