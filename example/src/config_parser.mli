@@ -1,3 +1,9 @@
+(*_***************************************************************************)
+(*_  auto-format: Build auto-format commands for custom languages            *)
+(*_  SPDX-FileCopyrightText: 2023 Mathieu Barbin <mathieu.barbin@gmail.com>  *)
+(*_  SPDX-License-Identifier: MIT                                            *)
+(*_***************************************************************************)
+
 type t = Config.t
 
 include Parsing_utils.S with type t := t
