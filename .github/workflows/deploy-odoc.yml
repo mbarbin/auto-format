@@ -15,7 +15,7 @@ jobs:
     name: Build OCaml Doc
     runs-on: ubuntu-latest
     env:
-      OCAML_VERSION: "5.4"
+      OCAML_VERSION: "5.5"
       DUNE_VERSION: "3.24.2"
       DUNE_DIGEST: "sha256:3a9cac891f0b6086bfbf58d16c6c17ddfd1d493e031b6b43901f585a7f6899c7"
     defaults:
